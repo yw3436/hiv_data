@@ -508,7 +508,58 @@ hiv_complete = hiv_complete %>%
     category = str_replace(category, "Men", "Male"),
   ) 
 
+hiv_complete = hiv_complete %>% 
+    mutate(
+    sex_cat = case_when(
+      category == "Male" ~ "Male",
+      category == "Female" ~ "Female",
+      category == "Transgender" ~ "Transgender",
+      TRUE ~ "All"
+    ),
+    race_cat = case_when(
+      category == "Black" ~ "Black",
+      category == "Latino/Hispanic" ~ "Latino/Hispanic",
+      category == "White" ~ "White",
+      category == "Asian/Pacific Islander" ~ "Asian/Pacific Islander",
+      category == "Native American" ~ "Native American",
+      category == "Multiracial" ~ "Multiracial",
+      category == "Unknown race" ~ "Unknown race",
+      TRUE ~ "All"
+    ),
+    borough_cat = case_when(
+      category == "Bronx" ~ "Bronx",
+      category == "Brooklyn" ~ "Brooklyn",
+      category == "Manhattan" ~ "Manhattan",
+      category == "Queens" ~ "Queens",
+      category == "Staten Island" ~ "Staten Island",
+      category == "Outside NYC" ~ "Outside NYC",
+      category == "Unknown borough" ~ "Unknown borough",
+      TRUE ~ "All"
+    ),
+    age_cat = case_when(
+      category == "0-12" ~ "0-12",
+      category == "13-19" ~ "13-19",
+      category == "20-29" ~ "20-29",
+      category == "30-39" ~ "30-39",
+      category == "40-49" ~ "40-49",
+      category == "50-59" ~ "50-59",
+      category == "60+" ~ "60+",
+      TRUE ~ "All"
+    ),
+    risk_cat = case_when(
+      category == "Injection drug use history (IDU)" ~ "Injection drug use history (IDU)",
+      category == "Heterosexual contact" ~ "Heterosexual contact",
+      category == "Male who have sex with men (MSM)" ~ "Male who have sex with men (MSM)",
+      category == "MSM-IDU" ~ "MSM-IDU",
+      category == "Perinatal" ~ "Perinatal",
+      category == "Transgender people with sexual contact" ~ "Transgender people with sexual contact",
+      category == "Unknown risk" ~ "Unknown risk",
+      category == "Other risk" ~ "Other risk",
+      TRUE ~ "All"
+    ))
+
 write.csv(hiv_complete,'data_complete.csv')
+
 
 ```
 
