@@ -42,13 +42,13 @@ nyc_hiv %>%
 
 ```{r}
 library(pdftools)
-url = "https://www1.nyc.gov/assets/doh/downloads/pdf/ah/surveillance2013-table-all.pdf"
+url_13 = "https://www1.nyc.gov/assets/doh/downloads/pdf/ah/surveillance2013-table-all.pdf"
 
-title =  pdf_text(url) %>% 
+title =  pdf_text(url_13) %>% 
   .[[2]] %>% str_split(., "\n") %>% .[[1]] %>% 
   .[4]
 
-data = pdf_text(url) %>% 
+data = pdf_text(url_13) %>% 
   .[[2]] %>% str_split(., "\n") %>% 
   as_tibble(.name_repair = make.names) %>% 
   mutate(category = str_sub(X, 0,75),
@@ -83,8 +83,9 @@ data %>% view()
 
 ```
 
-```{r}
+Function to extract data:
 
+```{r}
 pdf_scrape = function(pdf, report_year){
   title = pdf %>% 
     str_split(., "\n") %>% .[[1]] %>% 
@@ -117,28 +118,19 @@ pdf_scrape = function(pdf, report_year){
   
   cbind(year, title, data) %>% 
     as_tibble()
-
 }
 
-pdf =  pdf_text(url) 
-list = map(.x = pdf[-1], ~pdf_scrape(.x, 2013)) 
-clean = as.data.frame(do.call(rbind, list))
-clean %>% view()
-```
-
-
-
-```{r}
-clean %>% 
+data_clean = function(clean_data){
+  clean_data %>% 
   as_tibble() %>% 
   filter(title %in% c("Table 1.1. New York City (All)")) %>% 
-  na.omit(total_hiv_diag_N) %>% 
+  filter(!is.na(total_hiv_diag_N)) %>%
   filter(category != "Unknown") %>% 
   mutate(
     sex = case_when(
       category == "Male" ~ "Male",
       category == "Female" ~ "Female",
-      category == "Transgener" ~ "Transgender",
+      category == "Transgender" ~ "Transgender",
       TRUE ~ "All"
     ),
     race = case_when(
@@ -161,7 +153,8 @@ clean %>%
     ),
     age_cat = case_when(
       category == "0-12" ~ "0-12",
-      category == "13-19" ~ "20-29",
+      category == "13-19" ~ "13-19",
+      category == "20-29" ~ "20-29",
       category == "30-39" ~ "30-39",
       category == "40-49" ~ "40-49",
       category == "50-59" ~ "50-59",
@@ -169,29 +162,262 @@ clean %>%
       TRUE ~ "All"
     )
   ) %>% 
-  relocate(borough, sex, race) %>%
-  select(-category) %>%
-  head(23) %>% view()
-    
+  relocate(borough, sex, race, age_cat) %>%
+  #select(-category, -title) %>%
+  head(23)
+}
+
+```
+
+URL function:
+```{r}
+url_list = list(
+  url_11 = "https://www1.nyc.gov/assets/doh/downloads/pdf/ah/surveillance2011-table-all.pdf",
+  url_12 = "https://www1.nyc.gov/assets/doh/downloads/pdf/ah/surveillance2012-table-all.pdf",
+  url_13 = "https://www1.nyc.gov/assets/doh/downloads/pdf/ah/surveillance2013-table-all.pdf",
+  url_14 = "https://www1.nyc.gov/assets/doh/downloads/pdf/ah/surveillance2014-table-all.pdf",
+  url_15 = "https://www1.nyc.gov/assets/doh/downloads/pdf/ah/surveillance2015-table-all.pdf",
+  url_16 = "https://www1.nyc.gov/assets/doh/downloads/pdf/ah/surveillance2016-table-all.pdf",
+  url_17 = "https://www1.nyc.gov/assets/doh/downloads/pdf/ah/surveillance2017-table-all.pdf"
+)
+```
 
 
+HIV dataset for 2011: OK!!!
 
- mutate(day_cat = case_when(
-      day %in% c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday") ~ "weekday",
-      day %in% c("Saturday", "Sunday") ~ "weekend",
-      TRUE ~ ""),
+```{r}
+pdf =  pdf_text(url_list$url_11) 
+list = map(.x = pdf[-1], ~pdf_scrape(.x, 2011)) 
+clean11 = as.data.frame(do.call(rbind, list))
+
+data11 = data_clean(clean11)
+```
+
+
+HIV dataset for 2012: OK!!!
+
+```{r}
+title =  pdf_text(url_list$url_12) %>% 
+  .[[2]] %>% str_split(., "\n") %>% .[[1]] %>% 
+  .[4]
+
+data12 = pdf_text(url_list$url_12) %>% 
+  .[[2]] %>% str_split(., "\n") %>% 
+  as_tibble(.name_repair = make.names) %>% 
+  mutate(category = str_sub(X, 0,74),
+         total_hiv_diag_N = str_sub(X,76,80),
+         total_hiv_diag_per = str_sub(X,93,97),
+         without_aids_N = str_sub(X,93,100),
+         without_aids_per = str_sub(X,102,105),
+         concurrent_aids_N = str_sub(X,116,126),
+         concurrent_aids_per = str_sub(X,127,135),
+         aids_N = str_sub(X,137,144),
+         aids_per = str_sub(X,150,158),
+         plwha_N = str_sub(X,161,171),
+         plwha_per = str_sub(X,176,177),
+         death_N = str_sub(X,185,190),
+         death_per = str_sub(X,194)
+         ) %>% 
+  select(-X) %>% 
+  .[-c(1:10),] %>% 
+  filter(row_number() <= n()-2) %>% 
+  mutate_all(funs(str_replace(.,",", ""))) %>% 
+  mutate_all(str_squish) %>% 
+  mutate_at(vars(-category), as.numeric)
+
+data12 = data_clean(data12) %>% 
+  mutate(year = 2012)
+```
+
+
+HIV dataset for 2013: OK!!!
+
+```{r}
+pdf =  pdf_text(url_list$url_13) 
+list = map(.x = pdf[-1], ~pdf_scrape(.x, 2013)) 
+clean13 = as.data.frame(do.call(rbind, list))
+
+data13 = data_clean(clean13)
+```
+
+HIV dataset for 2014: OK!!!
+
+```{r}
+data14 = pdf_text(url_list$url_14) %>% 
+  .[[2]] %>% str_split(., "\n") %>% 
+  as_tibble(.name_repair = make.names) %>% 
+  mutate(category = str_sub(X, 0,73),
+         total_hiv_diag_N = str_sub(X,74,83),
+         total_hiv_diag_per = str_sub(X,84,88),
+         without_aids_N = str_sub(X,89,101),
+         without_aids_per = str_sub(X,102,113),
+         concurrent_aids_N = str_sub(X,114,122),
+         concurrent_aids_per = str_sub(X,123,133),
+         aids_N = str_sub(X,134,145),
+         aids_per = str_sub(X,146,156),
+         plwha_N = str_sub(X,157,163),
+         plwha_per = str_sub(X,171,179),
+         death_N = str_sub(X,180,187),
+         death_per = str_sub(X,188)
+         ) %>% 
+  select(-X) %>% 
+  .[-c(1:10),] %>% 
+  filter(row_number() <= n()-2) %>% 
+  mutate_all(funs(str_replace(.,",", ""))) %>% 
+  mutate_all(str_squish) %>% 
+  mutate_at(vars(-category), as.numeric)
+
+data14 = data_clean(data14) %>% 
+  mutate(
+    sex = case_when(
+      category == "Men" ~ "Male",
+      category == "Women" ~ "Female",
+      category == "Transgender" ~ "Transgender",
+      TRUE ~ "All")
+  )%>% 
+  mutate(year = 2014)
+
+```
+
+
+HIV dataset for 2015:
+
+```{r}
+data15 = pdf_text(url_list$url_15) %>% 
+  .[[2]] %>% str_split(., "\n") %>% 
+  as_tibble(.name_repair = make.names) %>% 
+  mutate(category = str_sub(X, 0,73),
+         total_hiv_diag_N = str_sub(X,74,83),
+         total_hiv_diag_per = str_sub(X,84,88),
+         without_aids_N = str_sub(X,89,101),
+         without_aids_per = str_sub(X,102,113),
+         concurrent_aids_N = str_sub(X,114,122),
+         concurrent_aids_per = str_sub(X,123,133),
+         aids_N = str_sub(X,134,145),
+         aids_per = str_sub(X,146,156),
+         plwha_N = str_sub(X,157,163),
+         plwha_per = str_sub(X,171,179),
+         death_N = str_sub(X,180,187),
+         death_per = str_sub(X,188)
+         ) %>% 
+  select(-X) %>% 
+  .[-c(1:10),] %>% 
+  filter(row_number() <= n()-2) %>% 
+  mutate_all(funs(str_replace(.,",", ""))) %>% 
+  mutate_all(str_squish) %>% 
+  mutate_at(vars(-category), as.numeric)
+
+data15 = data_clean(data15) %>% 
+  mutate(
+    sex = case_when(
+      category == "Men" ~ "Male",
+      category == "Women" ~ "Female",
+      category == "Transgender" ~ "Transgender",
+      TRUE ~ "All")
+  )%>% 
+  mutate(year = 2015)
+
+```
+
+
+HIV dataset for 2016:
+```{r}
+data16 = pdf_text(url_list$url_16) %>% 
+  .[[2]] %>% str_split(., "\n") %>% 
+  as_tibble(.name_repair = make.names) %>% 
+  mutate(category = str_sub(X, 0,73),
+         total_hiv_diag_N = str_sub(X,74,83),
+         total_hiv_diag_per = str_sub(X,84,88),
+         without_aids_N = str_sub(X,89,101),
+         without_aids_per = str_sub(X,102,113),
+         concurrent_aids_N = str_sub(X,114,122),
+         concurrent_aids_per = str_sub(X,123,133),
+         aids_N = str_sub(X,134,145),
+         aids_per = str_sub(X,146,156),
+         plwha_N = str_sub(X,157,163),
+         plwha_per = str_sub(X,171,179),
+         death_N = str_sub(X,180,187),
+         death_per = str_sub(X,188)
+         ) %>% 
+  select(-X) %>% 
+  .[-c(1:10),] %>% 
+  filter(row_number() <= n()-2) %>% 
+  mutate_all(funs(str_replace(.,",", ""))) %>% 
+  mutate_all(str_squish) %>% 
+  mutate_at(vars(-category), as.numeric)
+
+data16 = data_clean(data16) %>% 
+  mutate(
+    sex = case_when(
+      category == "Men" ~ "Male",
+      category == "Women" ~ "Female",
+      category == "Transgender" ~ "Transgender",
+      TRUE ~ "All")
+  )%>% 
+  mutate(year = 2016)
+```
+
+
+HIV dataset for 2017:
+
+```{r}
+data17 = pdf_text(url_list$url_17) %>% 
+  .[[2]] %>% str_split(., "\n") %>% 
+  as_tibble(.name_repair = make.names) %>% 
+  mutate(category = str_sub(X, 0,73),
+         total_hiv_diag_N = str_sub(X,74,83),
+         total_hiv_diag_per = str_sub(X,84,88),
+         without_aids_N = str_sub(X,89,101),
+         without_aids_per = str_sub(X,102,113),
+         concurrent_aids_N = str_sub(X,114,122),
+         concurrent_aids_per = str_sub(X,123,133),
+         aids_N = str_sub(X,134,145),
+         aids_per = str_sub(X,146,156),
+         plwha_N = str_sub(X,157,163),
+         plwha_per = str_sub(X,171,179),
+         death_N = str_sub(X,180,187),
+         death_per = str_sub(X,188)
+         ) %>% 
+  select(-X) %>% 
+  .[-c(1:10),] %>% 
+  filter(row_number() <= n()-2) %>% 
+  mutate_all(funs(str_replace(.,",", ""))) %>% 
+  mutate_all(str_squish) %>% 
+  mutate_at(vars(-category), as.numeric)
+
+data17 = data_clean(data17) %>% 
+  mutate(
+    sex = case_when(
+      category == "Men" ~ "Male",
+      category == "Women" ~ "Female",
+      category == "Transgender" ~ "Transgender",
+      TRUE ~ "All")
+  )%>% 
+  mutate(year = 2017)
+
+data17 %>% view()
+```
+
+Combine the whole dataset together:
+
+```{r}
+data_complete = list(
+  data11,
+  data12,
+  data13,
+  data14,
+  data15,
+  data16,
+  data17
+) %>% 
+  bind_rows() %>%
+  select(year, borough, sex, race, age_cat, total_hiv_diag_N, aids_N, plwha_N, death_N)
+  
+  
+  write.csv(data_complete,'data_complete.csv')
 ```
 
 
 
-, 
-                      "Table 1.5.1. Bronx, males (includes transgender men)",
-                      "Table 1.5.2. Bronx, females (includes transgender women)",
-                      "Table 1.5.3. Brooklyn, males (includes transgender men)",
-                      "Table 1.5.4. Brooklyn, females (includes transgender women)",
-                      "Table 1.5.5. Manhattan, males (includes transgender men)",
-                      "Table 1.5.6. Manhattan, females (includes transgender women)",
-                      "Table 1.5.7. Queens, males (includes transgender men)",
-                      "Table 1.5.8. Queens, females (includes transgender women)",
-                      "Table 1.5.9. Staten Island, males (includes transgender men)",
-                      "Table 1.5.10. Staten Island, females (includes transgender women)"
+
+
