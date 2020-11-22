@@ -1,0 +1,47 @@
+﻿year,borough,sex,race,age_cat,total_hiv_diag_N,aids_N,plwha_N,death_N
+2018,All,All,All,All,"1,917","1,214","127,287","1,683"
+2018,All,Male,All,All,"1,484",858,"92,044","1,173"
+2018,All,Female,All,All,374,331,"33,339",487
+2018,All,Transgender,All,All,59,25,"1,904",23
+2018,All,All,Black,All,879,634,"55,345",831
+2018,All,All,Latino/Hispanic,All,697,401,"41,908",543
+2018,All,All,White,All,219,113,"26,021",287
+2018,All,All,Asian/Pacific Islander,All,104,59,"3,018",13
+2018,All,All,Native American,All,1,3,297,6
+2018,All,All,Multiracial,All,17,4,370,3
+2018,All,All,All,0-12,2,4,69,0
+2018,All,All,All,13-19,70,19,396,1
+2018,All,All,All,20-29,670,184,"8,823",40
+2018,All,All,All,30-39,517,323,"19,726",96
+2018,All,All,All,40-49,276,231,"24,749",214
+2018,All,All,All,50-59,260,277,"40,750",556
+2018,All,All,All,60+,122,176,"32,774",776
+2018,Bronx,All,All,All,440,355,"30,749",469
+2018,Brooklyn,All,All,All,558,312,"30,398",374
+2018,Manhattan,All,All,All,375,214,"32,808",256
+2018,Queens,All,All,All,358,204,"18,684",124
+2018,Staten Island,All,All,All,31,20,"2,531",27
+2018,Outside NYC,All,All,All,135,102,"11,954",80
+2019,All,All,All,All,876,535,"127,823",707
+2019,All,Male,All,All,693,362,"92,535",490
+2019,All,Female,All,All,157,158,"33,306",210
+2019,All,Transgender,All,All,26,15,"1,982",7
+2019,All,All,Black,All,401,279,"55,511",351
+2019,All,All,Latino/Hispanic,All,328,184,"42,202",244
+2019,All,All,White,All,95,45,"25,998",95
+2019,All,All,Asian/Pacific Islander,All,35,20,"3,089",9
+2019,All,All,Native American,All,1,1,295,3
+2019,All,All,Multiracial,All,16,6,408,5
+2019,All,All,All,0-12,0,0,68,0
+2019,All,All,All,13-19,25,3,350,0
+2019,All,All,All,20-29,315,90,"8,622",8
+2019,All,All,All,30-39,235,137,"20,090",53
+2019,All,All,All,40-49,142,109,"24,243",87
+2019,All,All,All,50-59,104,122,"40,492",203
+2019,All,All,All,60+,55,74,"33,958",356
+2019,Bronx,All,All,All,230,167,"31,020",226
+2019,Brooklyn,All,All,All,237,143,"30,485",179
+2019,Manhattan,All,All,All,182,110,"32,767",158
+2019,Queens,All,All,All,144,66,"18,692",79
+2019,Staten Island,All,All,All,19,8,"2,539",14
+2019,Outside NYC,All,All,All,59,39,"12,148",19

@@ -401,6 +401,8 @@ data17 %>% view()
 Combine the whole dataset together:
 
 ```{r}
+df18_19 = read_csv("18_19.csv")
+
 data_complete = list(
   data11,
   data12,
@@ -408,7 +410,8 @@ data_complete = list(
   data14,
   data15,
   data16,
-  data17
+  data17,
+  df18_19
 ) %>% 
   bind_rows() %>%
   select(year, borough, sex, race, age_cat, total_hiv_diag_N, aids_N, plwha_N, death_N)
